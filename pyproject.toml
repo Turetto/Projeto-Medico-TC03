@@ -10,3 +10,28 @@ dependencies = [
     "pandas>=3.0.5",
     "scikit-learn>=1.9.0",
 ]
+
+[dependency-groups]
+dev = [
+    "ruff>=0.16.3",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py314"
+
+[tool.ruff.lint]
+select = [
+    "E",   # pycodestyle (erros)
+    "W",   # pycodestyle (warnings)
+    "F",   # pyflakes (erros lógicos, imports não usados etc.)
+    "I",   # isort (ordenação de imports)
+    "N",   # pep8-naming
+    "UP",  # pyupgrade (sintaxe moderna)
+    "B",   # flake8-bugbear (bugs comuns)
+]
+ignore = []
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"

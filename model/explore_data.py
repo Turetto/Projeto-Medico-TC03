@@ -1,6 +1,7 @@
+from pathlib import Path
+
 import kagglehub
 import pandas as pd
-from pathlib import Path
 
 dataset_path = kagglehub.dataset_download("chaitanyakck/medical-text")
 print(f"Dataset baixado em: {dataset_path}\n")
