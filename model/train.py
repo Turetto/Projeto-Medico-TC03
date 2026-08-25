@@ -4,11 +4,12 @@ from pathlib import Path
 import kagglehub
 import joblib
 import pandas as pd
-from sklearn.ensemble import RandomForestClassifier
+from imblearn.over_sampling import RandomOverSampler
+from imblearn.pipeline import Pipeline
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics import classification_report
 from sklearn.model_selection import train_test_split
-from sklearn.pipeline import Pipeline
+from sklearn.svm import LinearSVC
 
 LABEL_MAP = {
     1: "neoplasms",
@@ -65,13 +66,15 @@ def main():
             max_features=20000,
             ngram_range=(1,2),
             stop_words="english",
+            min_df=3,
+            sublinear_tf=True,
         )),
-        ("clf", RandomForestClassifier(
-            n_estimators=300,
-            max_depth=None,
-            class_weight="balanced",
+        ("oversample", RandomOverSampler(            
+            random_state=42
+        )),
+        ("clf", LinearSVC(
             random_state=42,
-            n_jobs=1
+            max_iter=5000,
         )),
     ])
 
@@ -93,4 +96,5 @@ def main():
 
 
 if __name__ == "__main__":
+    
     main()
