@@ -5,7 +5,12 @@ from app.schemas import ClassificacaoResponse, LaudoRequest
 
 app = FastAPI(
     title="API de Triagem de Laudos Médicos",
-    description="Classifica laudos médicos em 5 categorias de condição",
+    description=(
+        "Classifica laudos médicos em 5 categorias de condição. "
+        "Limitação conhecida: o modelo foi treinado exclusivamente com textos em "
+        "inglês (Medical Abstracts TC Corpus); textos em outros idiomas não são "
+        "reconhecidos pelo vocabulário do TF-IDF e produzem classificações não confiáveis."
+    ),
     version="0.1.0",
 )
 
