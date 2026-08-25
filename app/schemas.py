@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Field
-
+import os
 
 class LaudoRequest(BaseModel):
     texto: str = Field(
