@@ -1,8 +1,8 @@
 import json
 from pathlib import Path
 
-import kagglehub
 import joblib
+import kagglehub
 import pandas as pd
 from imblearn.over_sampling import RandomOverSampler
 from imblearn.pipeline import Pipeline
@@ -22,9 +22,10 @@ LABEL_MAP = {
 ARTIFACTS_DIR = Path("model/artifacts")
 ARTIFACTS_DIR.mkdir(parents=True, exist_ok=True)
 
+
 def load_train_data() -> pd.DataFrame:
     """
-    Baixar o dataset e ler o train.dat 
+    Baixar o dataset e ler o train.dat
     """
     dataset_path = Path(kagglehub.dataset_download("chaitanyakck/medical-text"))
     train_file = dataset_path / "train.dat"
@@ -57,26 +58,30 @@ def main():
     x = df["medical_abstract"]
     y = df["condition_label"]
 
-    x_train, x_test, y_train, y_test = train_test_split(
-        x, y, test_size=0.2, random_state=1312, stratify=y
-    )
+    x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.2, random_state=1312, stratify=y)
 
-    pipeline = Pipeline([
-        ("tfidf", TfidfVectorizer(
-            max_features=20000,
-            ngram_range=(1,2),
-            stop_words="english",
-            min_df=3,
-            sublinear_tf=True,
-        )),
-        ("oversample", RandomOverSampler(            
-            random_state=42
-        )),
-        ("clf", LinearSVC(
-            random_state=42,
-            max_iter=5000,
-        )),
-    ])
+    pipeline = Pipeline(
+        [
+            (
+                "tfidf",
+                TfidfVectorizer(
+                    max_features=20000,
+                    ngram_range=(1, 2),
+                    stop_words="english",
+                    min_df=3,
+                    sublinear_tf=True,
+                ),
+            ),
+            ("oversample", RandomOverSampler(random_state=42)),
+            (
+                "clf",
+                LinearSVC(
+                    random_state=42,
+                    max_iter=5000,
+                ),
+            ),
+        ]
+    )
 
     print("\n Treinando modelo...")
     pipeline.fit(x_train, y_train)
@@ -96,5 +101,4 @@ def main():
 
 
 if __name__ == "__main__":
-    
     main()

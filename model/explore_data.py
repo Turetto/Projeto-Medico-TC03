@@ -15,9 +15,8 @@ for f in files:
 print("\n --- Inspecionando arquivos \n")
 for f in files:
     if f.suffix.lower() in (".csv", ".dat", ".tsv", ".txt"):
-        print (f"## {f.name} ##")
+        print(f"## {f.name} ##")
         try:
-
             try:
                 df = pd.read_csv(f, nrows=5)
             except Exception:
