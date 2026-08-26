@@ -1,0 +1,12 @@
+.venv/
+__pycache__/
+*.pyc
+.git/
+.github/
+tests/
+data/
+notebooks/
+.env
+*.md
+model/train.py
+model/explore_data.py
