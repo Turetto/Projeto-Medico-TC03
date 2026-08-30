@@ -1,103 +1,32 @@
-import json
-from pathlib import Path
-
-import joblib
-import kagglehub
-import pandas as pd
-from imblearn.over_sampling import RandomOverSampler
-from imblearn.pipeline import Pipeline
-from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.metrics import classification_report
-from sklearn.model_selection import train_test_split
-from sklearn.svm import LinearSVC
-
-LABEL_MAP = {
-    1: "neoplasms",
-    2: "digestive_system_diseases",
-    3: "nervous_system_diseases",
-    4: "cardiovascular_diseases",
-    5: "general_pathological_conditions",
-}
-
-ARTIFACTS_DIR = Path("model/artifacts")
-ARTIFACTS_DIR.mkdir(parents=True, exist_ok=True)
-
-
-def load_train_data() -> pd.DataFrame:
-    """
-    Baixar o dataset e ler o train.dat
-    """
-    dataset_path = Path(kagglehub.dataset_download("chaitanyakck/medical-text"))
-    train_file = dataset_path / "train.dat"
-
-    rows = []
-    with open(train_file, encoding="utf-8", errors="ignore") as f:
-        for line in f:
-            line = line.rstrip("\n")
-            if "\t" not in line:
-                continue
-            label_str, text = line.split("\t", 1)
-            try:
-                label = int(label_str)
-            except ValueError:
-                continue
-            rows.append({"condition_label": label, "medical_abstract": text})
-
-    df = pd.DataFrame(rows)
-    df["condition_name"] = df["condition_label"].map(LABEL_MAP)
-    return df
+from model.pipeline_utils import (
+    MIN_MACRO_F1,
+    download_dataset,
+    load_train_data,
+    promote_candidate_to_production,
+    save_candidate,
+    train_and_evaluate,
+)
 
 
 def main():
-    print("carregando dados...")
-    df = load_train_data()
-    print(f"total de registros: {len(df)}")
-    print("distribuição das clases:")
-    print(df["condition_name"].value_counts())
+    print("Baixando dataset...")
+    dataset_path = download_dataset()
 
-    x = df["medical_abstract"]
-    y = df["condition_label"]
+    print("Carregando dados...")
+    df = load_train_data(dataset_path)
+    print(f"Total de registros: {len(df)}")
 
-    x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.2, random_state=1312, stratify=y)
+    print("\nTreinando modelo...")
+    pipeline, metrics = train_and_evaluate(df)
+    print(f"\nMacro F1: {metrics['macro_f1']:.3f}")
 
-    pipeline = Pipeline(
-        [
-            (
-                "tfidf",
-                TfidfVectorizer(
-                    max_features=20000,
-                    ngram_range=(1, 2),
-                    stop_words="english",
-                    min_df=3,
-                    sublinear_tf=True,
-                ),
-            ),
-            ("oversample", RandomOverSampler(random_state=42)),
-            (
-                "clf",
-                LinearSVC(
-                    random_state=42,
-                    max_iter=5000,
-                ),
-            ),
-        ]
-    )
+    save_candidate(pipeline)
 
-    print("\n Treinando modelo...")
-    pipeline.fit(x_train, y_train)
-
-    print("\n Avaliando no conjunto de teste (holdout)...")
-    y_pred = pipeline.predict(x_test)
-    target_names = [LABEL_MAP[i] for i in sorted(LABEL_MAP)]
-    print(classification_report(y_test, y_pred, target_names=target_names))
-
-    model_path = ARTIFACTS_DIR / "baseline_model.joblib"
-    joblib.dump(pipeline, model_path)
-
-    with open(ARTIFACTS_DIR / "label_map.json", "w") as f:
-        json.dump(LABEL_MAP, f, indent=2)
-
-    print(f"\n Modelo salvo em: {model_path}")
+    if metrics["macro_f1"] >= MIN_MACRO_F1:
+        promote_candidate_to_production()
+        print(f"Modelo promovido a produção (Macro F1 >= {MIN_MACRO_F1}).")
+    else:
+        print(f"Macro F1 abaixo do limiar ({MIN_MACRO_F1}) - modelo NÃO promovido.")
 
 
 if __name__ == "__main__":
