@@ -1,4 +1,3 @@
-# app/inference.py
 import json
 from functools import lru_cache
 from pathlib import Path
@@ -35,3 +34,11 @@ def predict(texto: str) -> tuple[str, int]:
     label_id = int(model.predict([texto])[0])
     condicao = label_map[label_id]
     return condicao, label_id
+
+
+def reload_model() -> None:
+    """
+    Limpa o cache de memoria, forçando a proxima chama a reler o modelo em disco
+    """
+    get_model.cache_clear()
+    get_label_map.cache_clear()
