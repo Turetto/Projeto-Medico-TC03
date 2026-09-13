@@ -37,8 +37,7 @@ def test_classificar_caso_conhecido_cardiovascular():
         "/classificar",
         json={
             "texto": (
-                "Patient presented with chest pain and elevated troponin "
-                "levels consistent with myocardial infarction"
+                "Patient presented with chest pain and elevated troponin levels consistent with myocardial infarction"
             )
         },
     )
