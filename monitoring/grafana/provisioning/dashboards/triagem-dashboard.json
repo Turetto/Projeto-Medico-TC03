@@ -1,0 +1,64 @@
+{
+  "title": "Triagem de Laudos Médicos - API",
+  "uid": "triagem-laudos-dashboard",
+  "timezone": "browser",
+  "schemaVersion": 39,
+  "version": 1,
+  "refresh": "10s",
+  "time": { "from": "now-1h", "to": "now" },
+  "panels": [
+    {
+      "id": 1,
+      "title": "Taxa de Requisições (por status)",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
+      "datasource": { "type": "prometheus", "uid": "prometheusds" },
+      "targets": [
+        {
+          "datasource": { "type": "prometheus", "uid": "prometheusds" },
+          "expr": "rate(api_requests_total[1m])",
+          "legendFormat": "{{status}}"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "title": "Latência de Inferência (p50 / p95 / p99)",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 0 },
+      "datasource": { "type": "prometheus", "uid": "prometheusds" },
+      "fieldConfig": { "defaults": { "unit": "s" }, "overrides": [] },
+      "targets": [
+        {
+          "datasource": { "type": "prometheus", "uid": "prometheusds" },
+          "expr": "histogram_quantile(0.50, sum(rate(api_inference_latency_seconds_bucket[5m])) by (le))",
+          "legendFormat": "p50"
+        },
+        {
+          "datasource": { "type": "prometheus", "uid": "prometheusds" },
+          "expr": "histogram_quantile(0.95, sum(rate(api_inference_latency_seconds_bucket[5m])) by (le))",
+          "legendFormat": "p95"
+        },
+        {
+          "datasource": { "type": "prometheus", "uid": "prometheusds" },
+          "expr": "histogram_quantile(0.99, sum(rate(api_inference_latency_seconds_bucket[5m])) by (le))",
+          "legendFormat": "p99"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "title": "Predições por Condição Médica",
+      "type": "piechart",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 8 },
+      "datasource": { "type": "prometheus", "uid": "prometheusds" },
+      "targets": [
+        {
+          "datasource": { "type": "prometheus", "uid": "prometheusds" },
+          "expr": "api_predictions_by_class_total",
+          "legendFormat": "{{condicao}}"
+        }
+      ]
+    }
+  ]
+}
