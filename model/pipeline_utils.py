@@ -7,9 +7,9 @@ import pandas as pd
 from imblearn.over_sampling import RandomOverSampler
 from imblearn.pipeline import Pipeline
 from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import classification_report, f1_score
 from sklearn.model_selection import train_test_split
-from sklearn.svm import LinearSVC
 
 LABEL_MAP = {
     1: "neoplasms",
@@ -65,7 +65,7 @@ def build_pipeline() -> Pipeline:
                 ),
             ),
             ("oversample", RandomOverSampler(random_state=42)),
-            ("clf", LinearSVC(random_state=42, max_iter=5000)),
+            ("clf", LogisticRegression(random_state=42, max_iter=5000)),
         ]
     )
 
