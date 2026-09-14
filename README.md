@@ -265,4 +265,4 @@ uv run pytest -v
 
 ## Apresentação do projeto
 
-- ![Link](https://youtu.be/wq6Z4lsJv34) 
+- [Link](https://youtu.be/wq6Z4lsJv34) 
