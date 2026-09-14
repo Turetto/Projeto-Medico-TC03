@@ -72,6 +72,12 @@ def main():
     onnx_fp32_size = (ARTIFACTS_DIR / "model_fp32.onnx").stat().st_size / 1024
     resultados.append(summarize("onnx_fp32", benchmark_onnx(ARTIFACTS_DIR / "model_fp32.onnx"), onnx_fp32_size))
 
+    # Nota: quantize_dynamic (onnxruntime) só quantiza pesos guardados como
+    # initializer em nós MatMul/Gemm/Conv. O skl2onnx converte LogisticRegression
+    # no operador especializado ai.onnx.ml.LinearClassifier, que guarda os
+    # coeficientes como atributo do próprio nó (não como initializer) - por isso
+    # o INT8 abaixo sai praticamente do mesmo tamanho/latência que o FP32 aqui.
+    # A comparação que importa nesse pipeline é sklearn (in-process) vs ONNX FP32.
     print("\n### ONNX INT8 (quantizado) ###")
     onnx_int8_size = (ARTIFACTS_DIR / "model_int8.onnx").stat().st_size / 1024
     resultados.append(summarize("onnx_int8", benchmark_onnx(ARTIFACTS_DIR / "model_int8.onnx"), onnx_int8_size))
