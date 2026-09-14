@@ -186,7 +186,7 @@ Disparo atual: **manual** (`schedule=None`). Retreino agendado automaticamente �
 2. **Latência de Inferência (p50/p95/p99)** — `histogram_quantile()` sobre o histograma de latência
 3. **Predições por Condição Médica** — distribuição das classes previstas ao longo do tempo
 
-> *Inserir aqui os prints do dashboard Grafana.*
+![alt text](image.png)
 
 ### Observação sobre outliers de latência
 
