@@ -262,3 +262,7 @@ uv run pytest -v
 - Embeddings semânticos (ex. `sentence-transformers`) como alternativa ao TF-IDF, com nova avaliação de latência.
 - Retreino agendado automaticamente (`schedule="@weekly"` na DAG), com avaliação periódica de deriva de dados via o painel de "Predições por Condição Médica".
 - Validação cruzada K-Fold para uma estimativa mais robusta das métricas do modelo.
+
+## Apresentação do projeto
+
+- ![Link](https://youtu.be/wq6Z4lsJv34) 
